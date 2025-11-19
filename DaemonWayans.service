@@ -1,0 +1,10 @@
+[Unit]
+Description=One White Chick's way of living in color
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/bin/go /home/lily/GitHub/go_projects/src/DaemonWayans/DaemonWayans
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
