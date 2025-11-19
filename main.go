@@ -16,6 +16,7 @@ import (
 
 const defaultTick = 60 * time.Second
 
+// config skeleton
 type config struct {
 	contentType string
 	server      string
@@ -69,6 +70,7 @@ func main() {
 		cancel()
 	}()
 
+	//Processes signals sent to daemon
 	go func() {
 		for {
 			select {
@@ -95,6 +97,7 @@ func main() {
 	}
 }
 
+// Initializes config instance using init then loops infinitely until context is done or ended
 func run(ctx context.Context, c *config, out io.Writer) error {
 	c.init(os.Args)
 	log.SetOutput(out)
