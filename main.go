@@ -11,12 +11,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/getlantern/systray"
 	"github.com/namsral/flag"
 )
 
 const defaultTick = 60 * time.Second
 
-// config skeleton
 type config struct {
 	contentType string
 	server      string
@@ -57,47 +57,9 @@ func (c *config) init(args []string) error {
 }
 
 func main() {
-	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
-
-	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
-
-	c := &config{}
-
-	defer func() {
-		signal.Stop(signalChan)
-		cancel()
-	}()
-
-	//Processes signals sent to daemon
-	go func() {
-		for {
-			select {
-			case s := <-signalChan:
-				switch s {
-				case syscall.SIGINT, syscall.SIGTERM:
-					log.Printf("Got SIGINT/SIGTERM. Later fam!")
-					cancel()
-					os.Exit(1)
-				case syscall.SIGHUP:
-					log.Printf("Got SIGHUP. We reloadin'")
-					c.init(os.Args)
-				}
-			case <-ctx.Done():
-				log.Printf("Dunzo.")
-				os.Exit(1)
-			}
-		}
-	}()
-
-	if err := run(ctx, c, os.Stdout); err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		os.Exit(1)
-	}
+	systray.Run(onReady, onExit)
 }
 
-// Initializes config instance using init then loops infinitely until context is done or ended
 func run(ctx context.Context, c *config, out io.Writer) error {
 	c.init(os.Args)
 	log.SetOutput(out)
@@ -129,4 +91,56 @@ func run(ctx context.Context, c *config, out io.Writer) error {
 			}
 		}
 	}
+}
+
+func onReady() {
+	systray.SetIcon(grabIcon("assets/daemon_wayans.ico"))
+	systray.SetTitle("Daemon Wayans")
+	systray.SetTooltip("If you see a Wayans, the AUR is up. If you don't see a Wayans, restart Daemon Wayans. Repeat as necessary.")
+
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
+
+	c := &config{}
+
+	defer func() {
+		signal.Stop(signalChan)
+		cancel()
+	}()
+
+	go func() {
+		for {
+			select {
+			case <-signalChan:
+				log.Printf("Got SIGINT/SIGTERM. Later fam!")
+				cancel()
+				os.Exit(1)
+			case <-ctx.Done():
+				log.Printf("Dunzo.")
+				os.Exit(1)
+			}
+		}
+	}()
+
+	if err := run(ctx, c, os.Stdout); err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+		os.Exit(1)
+	}
+}
+
+func grabIcon(s string) []byte {
+	b, err := os.ReadFile(s)
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	return b
+}
+
+// Need this function so systray.Run will work properly. My clean up is all in func run and main.
+func onExit() {
+
 }
