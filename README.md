@@ -8,12 +8,13 @@ or any of the Wayans clan for that matter...this is just a daemon.
 
 ### Roadmap
 ~~- Add icon/uptime indicator to notification area/systray~~
-- Create package for AUR
+~~- Create package for AUR~~
 
 
 ### Planned Future Features
 - Downtime indicator (rather than the app just Exiting)
 - Menu Tray item that quits the daemon
+- 
 
 ---
 
@@ -25,4 +26,7 @@ If it's up, you'll see a Wayans (in your systray).
 If it's down, you won't see a Wayans.
 If you don't see a Wayans, restart the daemon. Repeat as necessary. (Or just ping the AUR)
 
-AUR Package: TBD
+AUR Package: https://aur.archlinux.org/packages/daemonwayans
+
+After installing, you'll need to make a .service file so you can tell systemd to run it at startup.
+Instructions for how to do this are readily findable via search engine and beyond the scope of this README.
