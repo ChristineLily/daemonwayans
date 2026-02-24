@@ -8,6 +8,7 @@ or any of the Wayans clan for that matter...this is just a daemon.
 
 ### Roadmap
 ~~- Add icon/uptime indicator to notification area/systray~~
+
 ~~- Create package for AUR~~
 
 
