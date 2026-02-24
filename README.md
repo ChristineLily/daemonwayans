@@ -15,7 +15,7 @@ or any of the Wayans clan for that matter...this is just a daemon.
 ### Planned Future Features
 - Downtime indicator (rather than the app just Exiting)
 - Menu Tray item that quits the daemon
-- 
+- Popup systray icon chooser GUI
 
 ---
 
